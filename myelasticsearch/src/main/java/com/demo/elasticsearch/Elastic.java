@@ -7,7 +7,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
@@ -100,10 +103,38 @@ public class Elastic {
         System.out.println("文档ID："+response.getId()); // 第一次使用是1
         System.out.println("当前实例状态："+response.status());
 	} 
-	 
+	
+	public void getData()throws Exception{
+		GetResponse getResponse=client.prepareGet("twitter", "tweet", "1").get();
+	    System.out.println(getResponse.getSourceAsString());
+	} 
+	
+	public void updateData(){
+		JSONObject jsonObject=new JSONObject();
+	    jsonObject.put("user", "薛");
+	    jsonObject.put("postDate", "1989-11-11");
+	    jsonObject.put("message", "学习Elasticsearch");
+	     
+	    UpdateResponse response = client.prepareUpdate("twitter", "tweet", "1").setDoc(jsonObject.toString(),XContentType.JSON).get();
+	    System.out.println("索引名称："+response.getIndex());
+	    System.out.println("类型："+response.getType());
+	    System.out.println("文档ID："+response.getId()); // 第一次使用是1
+	    System.out.println("当前实例状态："+response.status());
+	}
+	
+	public void deleteData(){
+	    DeleteResponse response=client.prepareDelete("twitter", "tweet", "1").get();
+	    System.out.println("索引名称："+response.getIndex());
+	    System.out.println("类型："+response.getType());
+	    System.out.println("文档ID："+response.getId()); // 第一次使用是1
+	    System.out.println("当前实例状态："+response.status());
+	}
+	
 	public static void main(String[] args) throws Exception {
 		Elastic e=new Elastic();
-		e.addIndex4();
-		
+//		e.addIndex4();
+//		e.updateData();
+//		e.deleteData();
+		e.getData();
 	}
 }
